@@ -100,7 +100,11 @@ static NSString * SWG__fileNameForResponse(NSURLResponse *response) {
 - (void) signRequest:(NSMutableURLRequest *)request
 {
     NSString *iso8601Date           = [self iso8601Date];
-    NSString *canonicalizedResource = [NSString stringWithFormat:@"%@:%@", request.URL.path, iso8601Date];
+    NSString *path = request.URL.path;
+    if ( request.URL.query ) {
+        path = [NSString stringWithFormat:@"%@%@", path, request.URL.query];
+    }
+    NSString *canonicalizedResource = [NSString stringWithFormat:@"%@:%@", path, iso8601Date];
     NSString *signature             = [self hmacSha256:canonicalizedResource salt:self.configuration.apiKey[kAPIPrivateKey]];
 
     [request setValue:iso8601Date                           forHTTPHeaderField:@"X-Boomtown-Date"];
@@ -127,7 +131,7 @@ static NSString * SWG__fileNameForResponse(NSURLResponse *response) {
     NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
     [self.dateFormatter setLocale:enUSPOSIXLocale];
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
-    
+
     NSDate *now = [NSDate date];
     NSString *iso8601String = [self.dateFormatter stringFromDate:now];
     return iso8601String;
@@ -218,7 +222,7 @@ static NSString * SWG__fileNameForResponse(NSURLResponse *response) {
 
     // auth setting
     [self updateHeaderParams:&headerParams queryParams:&queryParams WithAuthSettings:authSettings];
-    
+
     NSMutableString *resourcePath = [NSMutableString stringWithString:path];
     [pathParams enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         NSString * safeString = ([obj isKindOfClass:[NSString class]]) ? obj : [NSString stringWithFormat:@"%@", obj];
@@ -268,7 +272,7 @@ static NSString * SWG__fileNameForResponse(NSURLResponse *response) {
     }
     [requestSerializer setValue:responseContentType forHTTPHeaderField:@"Accept"];
 
-    [self signRequest:request];    
+    [self signRequest:request];
 
     [self postProcessRequest:request];
 
