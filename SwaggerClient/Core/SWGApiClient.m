@@ -102,7 +102,7 @@ static NSString * SWG__fileNameForResponse(NSURLResponse *response) {
     NSString *iso8601Date           = [self iso8601Date];
     NSString *path = request.URL.path;
     if ( request.URL.query ) {
-        path = [NSString stringWithFormat:@"%@%@", path, request.URL.query];
+        path = [NSString stringWithFormat:@"%@?%@", path, request.URL.query];
     }
     NSString *canonicalizedResource = [NSString stringWithFormat:@"%@:%@", path, iso8601Date];
     NSString *signature             = [self hmacSha256:canonicalizedResource salt:self.configuration.apiKey[kAPIPrivateKey]];
