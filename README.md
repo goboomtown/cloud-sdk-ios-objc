@@ -39,3 +39,6 @@ To build the Example:
 - cd Example
 - run `pod install`
 - open `Example.xcworkspace` using Xcode
+- change __API_TOKEN__ to API token
+- change __API_PRIVATE_KEY__ to API private keys
+- Enjoy!
